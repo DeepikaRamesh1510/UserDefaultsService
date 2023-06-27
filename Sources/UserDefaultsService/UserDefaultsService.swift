@@ -22,6 +22,7 @@ extension Optional: AnyOptional {
 
 @propertyWrapper
 public struct UserDefault<Value>: UserDefaultWrapperProtocol {
+	
 	public var key: UserDefaultsKeyProtocol
 	public var defaultValue: Value
 	public var userDefaults: UserDefaultsService
@@ -37,6 +38,16 @@ public struct UserDefault<Value>: UserDefaultWrapperProtocol {
 				userDefaults.set(newValue, forKey: key)
 			}
 		}
+	}
+	
+	public init(
+		key: UserDefaultsKeyProtocol,
+		defaultValue: Value,
+		userDefaults: UserDefaultsService = UserDefaultsService.shared
+	) {
+		self.key = key
+		self.defaultValue = defaultValue
+		self.userDefaults = userDefaults
 	}
 }
 
