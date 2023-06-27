@@ -10,7 +10,6 @@ public protocol UserDefaultWrapperProtocol {
 	var key: UserDefaultsKeyProtocol { set get }
 	var defaultValue: DataType { get set }
 	var userDefaults: UserDefaultsService { get set }
-	var wrappedValue: DataType { get set }
 }
 
 private protocol AnyOptional {
@@ -21,8 +20,13 @@ extension Optional: AnyOptional {
 	var isNil: Bool { self == nil }
 }
 
-public extension UserDefaultWrapperProtocol {
-	var wrappedValue: DataType {
+@propertyWrapper
+public struct UserDefault<Value>: UserDefaultWrapperProtocol {
+	public var key: UserDefaultsKeyProtocol
+	public var defaultValue: Value
+	public var userDefaults: UserDefaultsService
+
+	public var wrappedValue: DataType {
 		get {
 			return userDefaults.object(forKey: key) as? DataType ?? defaultValue
 		}
@@ -34,13 +38,6 @@ public extension UserDefaultWrapperProtocol {
 			}
 		}
 	}
-}
-
-
-public struct UserDefault<Value>: UserDefaultWrapperProtocol {
-	public var key: UserDefaultsKeyProtocol
-	public var defaultValue: Value
-	public var userDefaults: UserDefaultsService
 }
 
 
