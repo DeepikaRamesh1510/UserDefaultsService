@@ -51,6 +51,50 @@ public struct UserDefault<Value>: UserDefaultWrapperProtocol {
 	}
 }
 
+@propertyWrapper
+public struct CodableUserDefault<Value: Codable>: UserDefaultWrapperProtocol {
+	
+	public var key: UserDefaultsKeyProtocol
+	public var defaultValue: Value
+	public var userDefaults: UserDefaultsService
+	
+	public var wrappedValue: DataType {
+		get {
+			let object = userDefaults.object(forKey: key)
+			if let data = object as? Data {
+				let decoder = JSONDecoder()
+				return (try? decoder.decode(Value.self, from: data)) ?? defaultValue
+			} else {
+				return object as? DataType ?? defaultValue
+			}
+			
+		}
+		set {
+			if let optional = newValue as? AnyOptional, optional.isNil {
+				userDefaults.remove(forKey: key)
+			} else {
+				let encoder = JSONEncoder()
+				if let encoded = try? encoder.encode(newValue),
+				   let data = String(data: encoded, encoding: .utf8) {
+					userDefaults.set(data, forKey: key)
+				} else {
+					userDefaults.set(newValue, forKey: key)
+				}
+			}
+		}
+	}
+	
+	public init(
+		key: UserDefaultsKeyProtocol,
+		defaultValue: Value,
+		userDefaults: UserDefaultsService = UserDefaultsService.shared
+	) {
+		self.key = key
+		self.defaultValue = defaultValue
+		self.userDefaults = userDefaults
+	}
+}
+
 
 	//public class UserDefaultsService {
 	//	public static var shared: UserDefaultsAccessor
