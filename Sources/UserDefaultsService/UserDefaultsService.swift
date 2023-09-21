@@ -74,9 +74,8 @@ public struct CodableUserDefault<Value: Codable>: UserDefaultWrapperProtocol {
 				userDefaults.remove(forKey: key)
 			} else {
 				let encoder = JSONEncoder()
-				if let encoded = try? encoder.encode(newValue),
-				   let data = String(data: encoded, encoding: .utf8) {
-					userDefaults.set(data, forKey: key)
+				if let encoded = try? encoder.encode(newValue) {
+					userDefaults.set(encoded, forKey: key)
 				} else {
 					userDefaults.set(newValue, forKey: key)
 				}
